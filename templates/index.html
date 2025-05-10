@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>To Do List</title>
+  <link href="https://fonts.googleapis.com/css2?family=Patrick+Hand&display=swap" rel="stylesheet">
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      background-color: #fdfbf8;
+      font-family: 'Patrick Hand', cursive;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    .container {
+      background-color: #fffaf3;
+      border: 3px solid #fdfbf8;
+      border-radius: 20px;
+      width: 320px;
+      padding: 20px;
+      box-shadow: 0 0 15px rgba(0,0,0,0.1);
+      position: relative;
+    }
+
+    h2 {
+      text-align: center;
+      color: #5b3d29;
+      font-size: 28px;
+      margin-bottom: 25px;
+    }
+
+    .welcome-message {
+      text-align: center;
+      color: #5b3d29;
+      margin-bottom: 10px;
+    }
+
+    .auth-links {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .auth-links a {
+      color: #5b3d29;
+      text-decoration: none;
+      margin: 0 5px;
+    }
+
+    .auth-links a:hover {
+      text-decoration: underline;
+    }
+
+    ul {
+      list-style-type: none;
+      padding: 0;
+    }
+
+    li {
+      background-color: #d3a374;
+      color: #fff;
+      margin: 10px 0;
+      padding: 10px 15px;
+      border-radius: 15px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .dot {
+      width: 12px;
+      height: 12px;
+      background-color: #5b3d29;
+      border-radius: 50%;
+      margin-right: 10px;
+    }
+
+    form {
+      display: flex;
+      margin-top: 15px;
+    }
+
+    input[type="text"] {
+      flex: 1;
+      padding: 10px;
+      border: none;
+      border-radius: 15px 0 0 15px;
+      background-color: #e4c4a0;
+      color: #5b3d29;
+      font-size: 16px;
+    }
+
+    button {
+      padding: 10px 15px;
+      border: none;
+      background-color: #5b3d29;
+      color: white;
+      border-radius: 0 15px 15px 0;
+      cursor: pointer;
+    }
+
+    .delete-btn {
+      background: none;
+      border: none;
+      color: white;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    .flash-messages {
+      text-align: center;
+      color: #5b3d29;
+      margin-bottom: 10px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    {% if 'username' in session %}
+      <div class="welcome-message">Welcome, {{ session['username'] }}!</div>
+      <div class="auth-links">
+        <a href="{{ url_for('logout') }}">Logout</a>
+      </div>
+    {% else %}
+      <div class="auth-links">
+        <a href="{{ url_for('login') }}">Login</a> | 
+        <a href="{{ url_for('register') }}">Register</a>
+      </div>
+    {% endif %}
+
+    <h2>to do list</h2>
+
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        <div class="flash-messages">
+          {% for message in messages %}
+            <div>{{ message }}</div>
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}
+
+    {% if 'user_id' in session %}
+      <ul>
+        {% for task in tasks %}
+          <li>
+            <span class="dot"></span> {{ task.title }}
+            <form method="GET" action="/delete/{{ task.id }}" style="margin: 0;">
+              <button class="delete-btn">x</button>
+            </form>
+          </li>
+        {% endfor %}
+      </ul>
+
+      <form action="/add" method="POST">
+        <input type="text" name="title" placeholder="New task..." required>
+        <button type="submit">+</button>
+      </form>
+    {% else %}
+      <div style="text-align: center; color: #5b3d29; margin-top: 20px;">
+        Please login to view and manage your tasks.
+      </div>
+    {% endif %}
+  </div>
+</body>
+</html>
